@@ -1,0 +1,29 @@
+{
+  "name": "@applyed/server",
+  "version": "0.0.1",
+  "description": "A library to build an HTTP Server",
+  "main": "build/index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "ts-node index.ts",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/applyed/server.git"
+  },
+  "keywords": [
+    "HTTP",
+    "Server"
+  ],
+  "author": "Shashi Shekhar <shshekhar93@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/applyed/server/issues"
+  },
+  "homepage": "https://github.com/applyed/server#readme",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
+  }
+}
