@@ -1,7 +1,10 @@
-const world = 'world';
+import { Server } from "./lib/server";
+import debug from 'debug';
 
-export function hello(who: string = world): string {
-  return `Hello ${who}! `;
-}
+const debugLog = debug('applyed-server:server')
 
-console.log(hello('World'));
+const s = new Server();
+(async () => {
+  await s.startServer(3000);
+  debugLog('server started at port 3000');
+})();
