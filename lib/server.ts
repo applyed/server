@@ -3,13 +3,14 @@ import {
   Server as HTTPServer,
 } from 'node:http';
 import debug from 'debug';
-import { HTTPRequest, HTTPResponse, Route } from './server-types';
+import { HTTPRequest, HTTPResponse, Middleware, Route } from './server-types';
+import { fromCb } from './utils';
 
 const debugLog = debug('applyed-server:server')
 
 export class Server {
   private routes:Array<Route>
-  private server:HTTPServer|null
+  private server:HTTPServer<typeof HTTPRequest, typeof HTTPResponse>|null
 
   constructor() {
     this.routes = [];
@@ -17,18 +18,28 @@ export class Server {
     this.onRequest = this.onRequest.bind(this);
   }
 
+  use(path: string, ...middlewares: Array<Middleware>): void {
+    this.routes.push({
+      path,
+      middlewares,
+    });
+  }
+
   onRequest(req: HTTPRequest, res: HTTPResponse) {
     debugLog(`${req.method} request received for '${req.url}'`);
-    res.end();
+    res.send({
+      foo: 'bar'
+    });
   }
 
   async startServer(port: number) {
     await this.stopServer();
 
-    const server = this.server = createServer(this.onRequest);
-    return new Promise<void>((resolve) => {
-      server.listen(port, resolve);
-    });
+    const server = this.server = createServer<typeof HTTPRequest, typeof HTTPResponse>({
+      IncomingMessage: HTTPRequest,
+      ServerResponse: HTTPResponse,
+    },this.onRequest);
+    return fromCb(cb => server.listen(port, cb));
   }
 
   async stopServer() {
@@ -37,12 +48,8 @@ export class Server {
       return;
     }
 
-    return new Promise<void>((resolve, reject) => {
-      this.server?.close(() => {
-        this.server = null;
-        resolve();
-      });
-    });
+    await fromCb(cb => this.server?.close(cb));
+    this.server = null;
   }
 
   async attachTo(server:HTTPServer) {
