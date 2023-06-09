@@ -4,7 +4,9 @@ import {
 } from 'node:http';
 import debug from 'debug';
 import { HTTPRequest, HTTPResponse, Middleware, Route } from './server-types';
-import { fromCb } from './utils';
+import { fromCb, pathToRegExp } from './utils';
+import { decorate } from './decorator';
+import { handleRequest } from './handler';
 
 const debugLog = debug('applyed-server:server')
 
@@ -18,18 +20,22 @@ export class Server {
     this.onRequest = this.onRequest.bind(this);
   }
 
-  use(path: string, ...middlewares: Array<Middleware>): void {
+  use(path: string | null, ...middlewares: Array<Middleware>): void {
     this.routes.push({
-      path,
+      path: pathToRegExp(path),
       middlewares,
     });
   }
 
-  onRequest(req: HTTPRequest, res: HTTPResponse) {
+  async onRequest(req: HTTPRequest, res: HTTPResponse) {
     debugLog(`${req.method} request received for '${req.url}'`);
-    res.send({
-      foo: 'bar'
-    });
+    decorate(req, res);
+    
+    await handleRequest(this.routes, req, res);
+
+    if(!res.isProcessed()) {
+      res.end('Uh oh! No handler registered for this request.');
+    }
   }
 
   async startServer(port: number) {

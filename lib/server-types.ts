@@ -6,7 +6,10 @@ import {
   Readable,
 } from 'node:stream';
 
-export class HTTPRequest extends IncomingMessage {}
+export class HTTPRequest extends IncomingMessage {
+  parsedUrl?: URL;
+  params?: { [key: string]: string};
+}
 
 export class HTTPResponse<Request extends IncomingMessage = IncomingMessage> extends ServerResponse<Request> {
   private processed: boolean;
@@ -64,9 +67,9 @@ export class HTTPResponse<Request extends IncomingMessage = IncomingMessage> ext
   }
 }
 
-export type Middleware = (req: Request, res: Response) => Promise<void>
+export type Middleware = (req: HTTPRequest, res: HTTPResponse) => Promise<void>
 
 export declare class Route {
-  path: string;
+  path: RegExp | null;
   middlewares: Array<Middleware>
 }
