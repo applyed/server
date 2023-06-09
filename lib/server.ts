@@ -2,13 +2,10 @@ import {
   createServer,
   Server as HTTPServer,
 } from 'node:http';
-import debug from 'debug';
 import { HTTPRequest, HTTPResponse, Middleware, Route } from './server-types';
 import { fromCb, pathToRegExp } from './utils';
 import { decorate } from './decorator';
 import { handleRequest } from './handler';
-
-const debugLog = debug('applyed-server:server')
 
 export class Server {
   private routes:Array<Route>
@@ -28,7 +25,6 @@ export class Server {
   }
 
   async onRequest(req: HTTPRequest, res: HTTPResponse) {
-    debugLog(`${req.method} request received for '${req.url}'`);
     decorate(req, res);
     
     await handleRequest(this.routes, req, res);

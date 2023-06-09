@@ -1,7 +1,4 @@
 import { Server } from "./lib/server";
-import debug from 'debug';
-
-const debugLog = debug('applyed-server:server')
 
 const s = new Server();
 s.use(null, async (req, res) => {
@@ -24,5 +21,4 @@ s.use('/get/:id', async (req, res) => {
 
 (async () => {
   await s.startServer(3000);
-  debugLog('server started at port 3000');
 })();
