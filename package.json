@@ -1,13 +1,13 @@
 {
   "name": "@applyed/server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A library to build an HTTP Server",
   "main": "build/lib/index.js",
   "scripts": {
     "dev": "nodemon index.ts",
     "build": "tsc",
     "test": "jest",
-    "prepublish": "tsc"
+    "prepare": "tsc"
   },
   "repository": {
     "type": "git",
