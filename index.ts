@@ -1,7 +1,7 @@
 import { Server } from "./lib/server";
 
 const s = new Server();
-s.use(null, async (req, res) => {
+s.use(async (req, res) => {
   // console.log('for all requests', req.parsedUrl?.pathname);
 });
 

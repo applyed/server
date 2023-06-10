@@ -17,9 +17,15 @@ export class Server {
     this.onRequest = this.onRequest.bind(this);
   }
 
-  use(path: string | null, ...middlewares: Array<Middleware>): void {
+  use(path: string | Middleware, ...middlewares: Array<Middleware>): void {
+    const pathProvided = typeof path === 'string';
+
+    if(!pathProvided) {
+      middlewares.unshift(path);
+    }
+
     this.routes.push({
-      path: pathToRegExp(path),
+      path: pathProvided? pathToRegExp(path) : null,
       middlewares,
     });
   }
