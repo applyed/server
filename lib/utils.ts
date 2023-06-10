@@ -1,9 +1,9 @@
-type CallbackFn<T> = (err?: Error, res?: T) => void;
+type CallbackFn<T> = (err?: Error | null, res?: T) => void;
 type CallbackAccepterFn<T> = (arg: CallbackFn<T>) => void;
 
 export function fromCb<T = void>(fn: CallbackAccepterFn<T>): Promise<T> {
   return new Promise((resolve, reject) => {
-    fn((err?: Error, res?: T) => {
+    fn((err?: Error | null, res?: T) => {
       if(err) {
         reject(err);
       }
@@ -42,7 +42,8 @@ export function isMatch(path: RegExp | null, url: string) {
   if(path === null) {
     return true;
   }
-
+  
+  path.lastIndex = 0;
   return path.test(url);
 }
 

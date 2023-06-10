@@ -5,6 +5,7 @@
   "main": "build/lib/index.js",
   "scripts": {
     "dev": "nodemon index.ts",
+    "clean": "rm -rf build",
     "build": "tsc",
     "lint": "eslint .",
     "test": "jest",
