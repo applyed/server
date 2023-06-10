@@ -17,8 +17,8 @@ export class Server {
     this.onRequest = this.onRequest.bind(this);
   }
 
-  use(path: string | Middleware, ...middlewares: Array<Middleware>): void {
-    const pathProvided = typeof path === 'string';
+  use(path: string | RegExp| Middleware, ...middlewares: Array<Middleware>): void {
+    const pathProvided = typeof path !== 'function';
 
     if(!pathProvided) {
       middlewares.unshift(path);

@@ -14,8 +14,8 @@ export function fromCb<T = void>(fn: CallbackAccepterFn<T>): Promise<T> {
   });
 }
 
-export function pathToRegExp(path: string | null): RegExp | null {
-  if(path === null) {
+export function pathToRegExp(path: string | RegExp): RegExp {
+  if(path instanceof RegExp) {
     return path;
   }
 
