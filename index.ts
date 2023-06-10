@@ -1,7 +1,7 @@
 import { Server } from "./lib/server";
 
 const s = new Server();
-s.use(async (req, res) => {
+s.use(async (/*req, res*/) => {
   // console.log('for all requests', req.parsedUrl?.pathname);
 });
 
@@ -12,7 +12,7 @@ s.use('/', async (req, res) => {
 });
 
 s.use('/foo/bar', async (req, res) => {
-  res.json('Fooo Baaar');
+  res.send('Fooo Baaar');
 });
 
 s.use('/get/:id', async (req, res) => {

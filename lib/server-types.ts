@@ -19,13 +19,14 @@ export class HTTPResponse<Request extends IncomingMessage = IncomingMessage> ext
     this.processed = false;
   }
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   override end(chunk?: any, encoding?: any, cb?: () => void): this {
     this.processed = true;
     super.end(chunk, encoding, cb);
     return this;
   }
 
-  send(arg: Buffer | string | Object | Readable): HTTPResponse {
+  send(arg: Buffer | string | object | Readable): HTTPResponse {
     if(arg instanceof Readable) {
       return this.stream(arg);
     }
@@ -55,7 +56,7 @@ export class HTTPResponse<Request extends IncomingMessage = IncomingMessage> ext
     return this;
   }
 
-  json(arg: Object): HTTPResponse {
+  json(arg: object): HTTPResponse {
     this.processed = true;
     const serialized = JSON.stringify(arg);
     this.end(serialized, 'utf-8');
