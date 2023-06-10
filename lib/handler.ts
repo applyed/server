@@ -11,7 +11,7 @@ export async function handleRequest(routes: Route[], req: HTTPRequest, res: HTTP
   // Iterate over the routes and call matching middlewares.
   for(const { path, middlewares } of routes) {
     if(isMatch(path, pathname)){
-      if(path) {
+      if(path && path.global) {
         req.params = extractParams(path, pathname);
       }
       
