@@ -36,7 +36,7 @@ export class Server {
     await handleRequest(this.routes, req, res);
 
     if(!res.isProcessed()) {
-      res.end('Uh oh! No handler registered for this request.');
+      res.end('');
     }
   }
 
