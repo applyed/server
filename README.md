@@ -39,14 +39,15 @@ s.startServer(3000);
   - Multiple chained middlewares
   - Multiple chained routes
   - Chain termination after response is sent.
-
-# To be implemented.
 - Cookies
   - Parse incoming cookies to request
   - Ability to send outgoing cookies
+
+# To be implemented.
 - Request body
   - Ability to parse JSON body
 - Response
   - Set content length
   - Set Content type
   - [Potentially] a helper for setting content-type
+- Documentation

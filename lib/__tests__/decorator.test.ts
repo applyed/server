@@ -1,5 +1,6 @@
 import { decorate } from "../decorator";
-import { HTTPRequest, HTTPResponse } from "../server-types";
+import { HTTPRequest } from "../http-request";
+import { HTTPResponse } from "../http-response";
 
 function searchParamsToObj(params?: URLSearchParams) {
   return Object.fromEntries([

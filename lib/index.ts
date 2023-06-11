@@ -1,6 +1,6 @@
 import { Server } from './server';
 
-export * from './server-types';
+export * from './types';
 
 export { Server };
 

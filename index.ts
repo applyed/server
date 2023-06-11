@@ -1,8 +1,9 @@
 import { Server } from "./lib/server";
 
 const s = new Server();
-s.use(async (/*req, res*/) => {
-  // console.log('for all requests', req.parsedUrl?.pathname);
+s.use(async (req, res) => {
+  if(!req.cookies()?.foo)
+    res.cookie('foo', 'bar');
 });
 
 s.use('/', async (req, res) => {

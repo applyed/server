@@ -1,4 +1,5 @@
-import { HTTPRequest, HTTPResponse } from "./server-types";
+import { HTTPRequest } from "./http-request";
+import { HTTPResponse } from "./http-response";
 
 const DEFAULT_HOST = "http://localhost/";
 

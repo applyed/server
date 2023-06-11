@@ -2,10 +2,12 @@ import {
   createServer,
   Server as HTTPServer,
 } from 'node:http';
-import { HTTPRequest, HTTPResponse, Middleware, Route } from './server-types';
+import { Middleware, Route } from './types';
 import { fromCb, pathToRegExp } from './utils';
 import { decorate } from './decorator';
 import { handleRequest } from './handler';
+import { HTTPRequest } from './http-request';
+import { HTTPResponse } from './http-response';
 
 export class Server {
   private routes:Array<Route>

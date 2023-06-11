@@ -1,5 +1,6 @@
 import { handleRequest } from "../handler";
-import { HTTPRequest, HTTPResponse, Middleware } from "../server-types";
+import { HTTPRequest } from "../http-request";
+import { HTTPResponse } from "../http-response";
 import { pathToRegExp } from "../utils";
 
 describe('Handler tests', () => {

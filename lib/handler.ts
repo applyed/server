@@ -1,4 +1,6 @@
-import { HTTPRequest, HTTPResponse, Route } from "./server-types";
+import { HTTPRequest } from "./http-request";
+import { HTTPResponse } from "./http-response";
+import { Route } from "./types";
 import { extractParams, isMatch } from "./utils";
 
 export async function handleRequest(routes: Route[], req: HTTPRequest, res: HTTPResponse) {

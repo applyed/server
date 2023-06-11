@@ -3,14 +3,16 @@ import {
   Server as HTTPServer
 } from 'node:http';
 import { Server } from "../server";
-import { HTTPRequest, HTTPResponse, Route } from '../server-types';
+import { Route } from '../types';
 import { handleRequest } from '../handler';
 import { decorate } from '../decorator';
+import { HTTPRequest } from '../http-request';
+import { HTTPResponse } from '../http-response';
 
 const MOCK_LISTEN = jest.fn((port: number, cb: () => void) => { setTimeout(cb, 0) });
 const MOCK_CLOSE = jest.fn((cb: () => void) => { setTimeout(cb, 0) });
 const MOCK_LISTENING = jest.fn(() => false);
-const MOCK_EVENT_EMITTER = jest.fn(() => {});
+const MOCK_EVENT_EMITTER = jest.fn(() => {/* test fn */});
 jest.mock('node:http', () => ({
   ...jest.requireActual('node:http'),
   createServer: jest.fn(() => ({
@@ -90,9 +92,9 @@ describe('Server tests', () => {
       routes.length = 0;
     };
 
-    const middlewareOne = async (req: HTTPRequest, res: HTTPResponse) => {};
+    const middlewareOne = async (req: HTTPRequest, res: HTTPResponse) => {/* test fn */};
 
-    const middlewareTwo = async (req: HTTPRequest, res: HTTPResponse) => {};
+    const middlewareTwo = async (req: HTTPRequest, res: HTTPResponse) => {/* test fn */};
 
     beforeAll(async () => {
       const req = ({} as HTTPRequest);
