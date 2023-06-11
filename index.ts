@@ -6,7 +6,7 @@ s.use(async (/*req, res*/) => {
 });
 
 s.use('/', async (req, res) => {
-  res.json({
+  res.send({
     message: 'request handled!!'
   })
 });

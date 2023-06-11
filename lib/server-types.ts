@@ -35,12 +35,10 @@ export class HTTPResponse<Request extends IncomingMessage = IncomingMessage> ext
     if(Buffer.isBuffer(arg)) {
       respBuffer = arg;
     }
-
-    if(typeof arg === 'string') {
+    else if(typeof arg === 'string') {
       respBuffer = Buffer.from(arg);
     }
-
-    if(typeof arg === 'object') {
+    else if(typeof arg === 'object') {
       respBuffer = Buffer.from(
         JSON.stringify(arg)
       );
@@ -53,13 +51,6 @@ export class HTTPResponse<Request extends IncomingMessage = IncomingMessage> ext
   stream(arg: Readable): HTTPResponse {
     this.processed = true;
     arg.pipe(this);
-    return this;
-  }
-
-  json(arg: object): HTTPResponse {
-    this.processed = true;
-    const serialized = JSON.stringify(arg);
-    this.end(serialized, 'utf-8');
     return this;
   }
 
