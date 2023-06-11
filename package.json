@@ -1,6 +1,6 @@
 {
   "name": "@applyed/server",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A library to build an HTTP Server",
   "main": "build/lib/index.js",
   "scripts": {
