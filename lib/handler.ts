@@ -1,13 +1,23 @@
 import { HTTPRequest } from "./http-request";
 import { HTTPResponse } from "./http-response";
-import { Route } from "./types";
+import { ErrorMiddleware, Middleware, Route } from "./types";
 import { extractParams, isMatch } from "./utils";
 
-export async function handleRequest(routes: Route[], req: HTTPRequest, res: HTTPResponse) {
+export async function handleRequest<T extends Function = Middleware>(
+  routes: Route<T>[],
+  err: Error | null,
+  req: HTTPRequest,
+  res: HTTPResponse
+) {
   const pathname = req.parsedUrl?.pathname
 
   if(!pathname) {
     return;
+  }
+
+  const args: Array<HTTPRequest | HTTPResponse | Error> = [req, res];
+  if(err) {
+    args.unshift(err);
   }
 
   // Iterate over the routes and call matching middlewares.
@@ -18,7 +28,8 @@ export async function handleRequest(routes: Route[], req: HTTPRequest, res: HTTP
       }
       
       for(const middleware of middlewares) {
-        await middleware(req, res);
+        await middleware(...args);
+        
         if(!processNext(res)) {
           return;
         }

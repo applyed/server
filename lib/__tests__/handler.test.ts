@@ -8,9 +8,10 @@ describe('Handler tests', () => {
     res.send('response');
   });
 
-  const dontSendResponse = jest.fn(async (req: HTTPRequest, res: HTTPResponse) => { /* Do nothing */ });
+  const dontSendResponse = jest.fn(async (req: HTTPRequest, res: HTTPResponse) => { /* Test fn */ });
+  const errorHandler = jest.fn(async (err: Error, req, HTTPRequest, res:HTTPResponse) => { /* Test fn */})
 
-  describe('handleRequest', () => {
+  describe('handleRequest - without error', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -21,7 +22,7 @@ describe('Handler tests', () => {
       await handleRequest([{
         path: null,
         middlewares: [sendResponse]
-      }], req, res)
+      }], null, req, res)
       expect(sendResponse).not.toHaveBeenCalled();
     });
 
@@ -33,7 +34,7 @@ describe('Handler tests', () => {
       await handleRequest([{
         path: null,
         middlewares: [dontSendResponse, sendResponse]
-      }], req, res);
+      }], null, req, res);
       expect(dontSendResponse).toHaveBeenCalledWith(req, res);
       expect(sendResponse).toHaveBeenCalledWith(req, res);
     });
@@ -47,7 +48,7 @@ describe('Handler tests', () => {
       await handleRequest([{
         path: pathToRegExp('/foo/bar'),
         middlewares: [sendResponse, dontSendResponse],
-      }], req, res);
+      }], null, req, res);
       expect(sendResponse).toHaveBeenCalledWith(req, res);
       expect(dontSendResponse).not.toHaveBeenCalled();
     });
@@ -63,13 +64,12 @@ describe('Handler tests', () => {
       }, {
         path: pathToRegExp('/foo/bar'),
         middlewares: [sendResponse],
-      }], req, res);
+      }], null, req, res);
       expect(dontSendResponse).toHaveBeenCalledWith(req, res);
       expect(sendResponse).toHaveBeenCalledWith(req, res);
     });
 
     it('Should skip routes after a response is sent', async () => {
-
       const req = ({
         parsedUrl: new URL('http://localhost/foo/bar'),
       } as HTTPRequest);
@@ -80,7 +80,7 @@ describe('Handler tests', () => {
       }, {
         path: pathToRegExp('/foo/bar'),
         middlewares: [dontSendResponse],
-      }], req, res);
+      }], null, req, res);
       expect(sendResponse).toHaveBeenCalledWith(req, res);
       expect(dontSendResponse).not.toHaveBeenCalled();
     });
@@ -93,11 +93,26 @@ describe('Handler tests', () => {
       await handleRequest([{
         path: pathToRegExp('/get/:id'),
         middlewares: [sendResponse],
-      }], req, res);
+      }], null, req, res);
       expect(sendResponse).toHaveBeenCalledWith(req, res);
       expect(req.params).toEqual({
         id: '5',
       });
-    })
+    });
+
+    it('Should pass error to middleware if provided', async () => {
+      const req = ({
+        parsedUrl: new URL('http://localhost/foo/bar'),
+      } as HTTPRequest);
+      const res = new HTTPResponse(req);
+      const err = new Error('Something went wrong');
+
+      await handleRequest([{
+        path: pathToRegExp('/foo/bar'),
+        middlewares: [errorHandler],
+      }], err, req, res);
+
+      expect(errorHandler).toHaveBeenCalledWith(err, req, res);
+    });
   });
 });

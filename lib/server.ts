@@ -2,7 +2,7 @@ import {
   createServer,
   Server as HTTPServer,
 } from 'node:http';
-import { Middleware, Route } from './types';
+import { ErrorMiddleware, Middleware, Route } from './types';
 import { fromCb, pathToRegExp } from './utils';
 import { decorate } from './decorator';
 import { handleRequest } from './handler';
@@ -10,12 +10,11 @@ import { HTTPRequest } from './http-request';
 import { HTTPResponse } from './http-response';
 
 export class Server {
-  private routes:Array<Route>
-  private server:HTTPServer<typeof HTTPRequest, typeof HTTPResponse>|null
+  private routes:Array<Route> = [];
+  private errorRoutes: Array<Route<ErrorMiddleware>> = [];
+  private server:HTTPServer<typeof HTTPRequest, typeof HTTPResponse> | null = null;
 
   constructor() {
-    this.routes = [];
-    this.server = null;
     this.onRequest = this.onRequest.bind(this);
   }
 
@@ -32,10 +31,28 @@ export class Server {
     });
   }
 
+  useErrorHandler(path: string | RegExp | ErrorMiddleware, ...middlewares: Array<ErrorMiddleware>): void {
+    const pathProvided = typeof path !== 'function';
+
+    if(!pathProvided) {
+      middlewares.unshift(path);
+    }
+
+    this.errorRoutes.push({
+      path: pathProvided? pathToRegExp(path) : null,
+      middlewares,
+    });
+  }
+
   async onRequest(req: HTTPRequest, res: HTTPResponse) {
     decorate(req, res);
     
-    await handleRequest(this.routes, req, res);
+    try {
+      await handleRequest(this.routes, null, req, res);
+    }
+    catch(err) {
+      await handleRequest(this.errorRoutes, (err as Error), req, res);
+    }
 
     if(!res.isProcessed()) {
       res.end('');
