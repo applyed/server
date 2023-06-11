@@ -42,10 +42,12 @@ s.startServer(3000);
 - Cookies
   - Parse incoming cookies to request
   - Ability to send outgoing cookies
+- Request
+  - Ability to parse JSON body
 
 # To be implemented.
-- Request body
-  - Ability to parse JSON body
+- Routing
+  - Error handling middlewares
 - Response
   - Set content length
   - Set Content type
