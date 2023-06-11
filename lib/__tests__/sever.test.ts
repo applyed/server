@@ -3,7 +3,7 @@ import {
   Server as HTTPServer
 } from 'node:http';
 import { Server } from "../server";
-import { Route } from '../types';
+import { ErrorMiddleware, Middleware, Route } from '../types';
 import { handleRequest } from '../handler';
 import { decorate } from '../decorator';
 import { HTTPRequest } from '../http-request';
@@ -84,7 +84,7 @@ describe('Server tests', () => {
     });
   });
 
-  describe('use new middleware method', () => {
+  describe('use - Add new middleware method', () => {
     const s = new Server();
     let routes: Array<Route>;
 
@@ -93,16 +93,15 @@ describe('Server tests', () => {
     };
 
     const middlewareOne = async (req: HTTPRequest, res: HTTPResponse) => {/* test fn */};
-
     const middlewareTwo = async (req: HTTPRequest, res: HTTPResponse) => {/* test fn */};
 
     beforeAll(async () => {
       const req = ({} as HTTPRequest);
       const res = new HTTPResponse(req);
       await s.onRequest(req, res);
-      expect(handleRequest).toHaveBeenCalled();
-      // Extract routes array from the server;
-      routes = (handleRequest as jest.MockedFunction<typeof handleRequest>).mock.calls[0][0];
+
+      // Extract routes arrays from the server;
+      routes = (handleRequest as jest.MockedFunction<typeof handleRequest<Middleware>>).mock.calls[0][0];
     });
 
     it('Should use the first param as middleware if its type is function', () => {
@@ -161,6 +160,86 @@ describe('Server tests', () => {
     });
   });
 
+  describe('useErrorHandler - Add new error middleware', () => {
+    const s = new Server();
+    let errorRoutes: Array<Route<ErrorMiddleware>>;
+
+    const clean = () => {
+      errorRoutes.length = 0;
+    };
+
+    const errMiddlewareOne = jest.fn(async (err: Error, req: HTTPRequest, res: HTTPResponse) => {/* test fn */});
+    const errMiddlewareTwo = jest.fn(async (err: Error, req: HTTPRequest, res: HTTPResponse) => {/* test fn */});
+
+    beforeAll(async () => {
+      jest.resetAllMocks();
+      
+      const req = ({} as HTTPRequest);
+      const res = new HTTPResponse(req);
+      (handleRequest as jest.MockedFunction<typeof handleRequest<Middleware>>).mockRejectedValueOnce(new Error('NETWORK_ERROR'));
+      await s.onRequest(req, res);
+      expect(handleRequest).toHaveBeenCalledTimes(2);
+
+      // Extract error routes array from the server;
+      errorRoutes = (handleRequest as jest.MockedFunction<typeof handleRequest<ErrorMiddleware>>).mock.calls[1][0];
+    });
+
+    it('Should use the first param as middleware if its type is function', () => {
+      clean();
+
+      s.useErrorHandler(errMiddlewareOne);
+      expect(errorRoutes).toEqual([{
+        path: null,
+        middlewares: [errMiddlewareOne]
+      }]);
+    });
+
+    it('Should use the first param as path if its RegEx', () => {
+      clean();
+
+      const regex = /^\/foo\/bar\/?$/g;
+      s.useErrorHandler(regex, errMiddlewareOne);
+      expect(errorRoutes).toEqual([{
+        path: regex,
+        middlewares: [errMiddlewareOne],
+      }]);
+    });
+
+    it('Should use the first param as path if its String', () => {
+      clean();
+      s.useErrorHandler('/foo/bar', errMiddlewareOne);
+      expect(errorRoutes.length).toBe(1);
+      expect(errorRoutes).toEqual([{
+        path: /^\/foo\/bar\/?$/g,
+        middlewares: [errMiddlewareOne],
+      }]);
+    });
+
+    it('Should handle multiple middlewares', () => {
+      clean();
+
+      s.useErrorHandler('/foo/bar', errMiddlewareOne, errMiddlewareTwo);
+      expect(errorRoutes).toEqual([{
+        path: /^\/foo\/bar\/?$/g,
+        middlewares: [errMiddlewareOne, errMiddlewareTwo],
+      }])
+    });
+
+    it('Should handle multiple routes', () => {
+      clean();
+
+      s.useErrorHandler('/foo', errMiddlewareOne, errMiddlewareTwo);
+      s.useErrorHandler('/bar', errMiddlewareTwo);
+      expect(errorRoutes).toEqual([{
+        path: /^\/foo\/?$/g,
+        middlewares: [errMiddlewareOne, errMiddlewareTwo],
+      }, {
+        path: /^\/bar\/?$/g,
+        middlewares: [errMiddlewareTwo],
+      }]);
+    });
+  });
+
   describe('onRequest - request handler method', () => {
     it('Should call decorate followed by handler', async () => {
       const s = new Server();
@@ -170,7 +249,7 @@ describe('Server tests', () => {
 
       await s.onRequest(req, res);
       expect(decorate).toHaveBeenCalledWith(req, res);
-      expect(handleRequest).toHaveBeenCalledWith([], req, res);
+      expect(handleRequest).toHaveBeenCalledWith([], null, req, res);
       expect(res.end).toHaveBeenCalledWith('');
     })
   });

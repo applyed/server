@@ -39,6 +39,7 @@ s.startServer(3000);
   - Multiple chained middlewares
   - Multiple chained routes
   - Chain termination after response is sent.
+  - Error handling middlewares
 - Cookies
   - Parse incoming cookies to request
   - Ability to send outgoing cookies
@@ -47,7 +48,7 @@ s.startServer(3000);
 
 # To be implemented.
 - Routing
-  - Error handling middlewares
+  - Error handling middleware exhaustive tests (chain termination specifically)
 - Response
   - Set content length
   - Set Content type
