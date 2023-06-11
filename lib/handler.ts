@@ -1,8 +1,9 @@
 import { HTTPRequest } from "./http-request";
 import { HTTPResponse } from "./http-response";
-import { ErrorMiddleware, Middleware, Route } from "./types";
+import { Middleware, Route } from "./types";
 import { extractParams, isMatch } from "./utils";
 
+/*eslint-disable-next-line @typescript-eslint/ban-types */
 export async function handleRequest<T extends Function = Middleware>(
   routes: Route<T>[],
   err: Error | null,
